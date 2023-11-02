@@ -1,0 +1,8 @@
+site_name: "TwoApi"
+site_description: "TwoApi"
+
+nav:
+  - Introduction: index.md
+
+plugins:
+  - techdocs-core

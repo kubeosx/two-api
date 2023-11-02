@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: two-api
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: two-api
+  template:
+    metadata:
+      annotations:
+        backstage.io/kubernetes-id: two-api
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/role: 'two-api'
+        vault.hashicorp.com/agent-inject-secret-config.txt: 'kubeos/dev/two-api'
+    spec:
+      serviceAccountName: two-api
+      automountServiceAccountToken: true
+      volumes:
+        # - name: rw-tmp-volume
+        #   persistentVolumeClaim:
+        #     claimName: imagestoreclaim
+        - name: tmp-rw-volume
+          emptyDir: {}
+        - name: appsettings-volume
+          configMap:
+            name: appsettings
+      containers:
+        - name: my-two-api
+          image: rohitrustagi007/two-api:1
+          env: 
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
+          volumeMounts:
+            - mountPath: "/tmp"
+              name: tmp-rw-volume
+            - name: appsettings-volume
+              mountPath: /app/Settings    
+          ports:
+            - containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 500Mi
+          securityContext:
+            runAsUser: 1000 # Replace with your desired user ID
+            runAsGroup: 1000 # Replace with your desired group ID
+            capabilities:
+              drop:
+                - all
+            readOnlyRootFilesystem: true

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: two-api
+  labels:
+    metrics-scraper: prometheus
+spec:
+  selector:
+    app: two-api
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

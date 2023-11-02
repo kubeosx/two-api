@@ -1,0 +1,64 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: "TwoApi"
+  description: "TwoApi"
+  annotations:
+    github.com/project-slug: kubeosx/two-api
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: "TwoApi"
+    backstage.io/kubernetes-namespace: "dev"
+    prometheus.io/alert: all
+    vault.io/secrets-path: 'kubeos/dev/two-api'
+  tags:
+    - dotnet
+    - webapi
+  links:
+    - url: https://github.com/kubeosx/two-api
+      icon: web
+      title: Github
+    - url: https://github.com/kubeosx/two-api/issues
+      icon: web
+      title: Github Issues
+spec:
+  type: service
+  lifecycle: experimental
+  owner: "group:default/backend-team"
+  system:  "system:default/shopping-app"
+  providesApis:
+    - "TwoApi-api"
+  dependsOn:
+    - component:default/kubeos-github-workflows
+  
+    - component:default/kubeos-baseline
+  
+  consumesApis:
+  
+    - api:default/auth-api
+  
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: TwoApi-api
+  description: The TwoApi API
+  tags:
+    - api
+    - rest
+  links:
+    - url: https://github.com/kubeosx/two-api
+      icon: web
+      title: Github
+    - url: https://github.com/kubeosx/two-api/issues
+      icon: web
+      title: Github Issues
+    - url: https://github.com/kubeosx/two-api/blob/main/src/openapi.json
+      title: API Spec
+      icon: code
+spec:
+  type: openapi
+  lifecycle: experimental
+  owner: "group:default/backend-team"
+  system:  "system:default/shopping-app"
+  definition:
+    $text: ./openapi.json
